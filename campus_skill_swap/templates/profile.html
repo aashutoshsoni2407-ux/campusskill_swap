@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+
+{% block title %}{{ profile_user.name }} - Peer Tutor Profile | CampusSkillSwap{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2rem; max-width: 1100px;">
+    <!-- Profile Hero Card with Collegiate Architecture Background -->
+    <div style="background: linear-gradient(180deg, rgba(6, 9, 15, 0.5) 0%, rgba(13, 19, 31, 0.95) 100%),
+                url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1200&q=80') center/cover;
+                border-radius: var(--radius-lg) var(--radius-lg) 0 0; border: 1px solid var(--border-color); border-bottom: none;
+                padding: 2.5rem 2rem 1.5rem;">
+        <div style="display: flex; gap: 1.5rem; align-items: flex-end; flex-wrap: wrap;">
+            <img src="{{ profile_user.profile_pic }}" alt="{{ profile_user.name }}" 
+                 style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); box-shadow: var(--shadow-lg);">
+            <div style="flex: 1;">
+                <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                    <h1 style="color: #ffffff; font-size: 2.2rem; font-weight: 800; margin: 0;">{{ profile_user.name }}</h1>
+                    <span class="academic-badge" style="margin: 0;">
+                        <i class="ph ph-certificate"></i> {{ profile_user.academic_performance }}
+                    </span>
+                </div>
+                <div style="color: var(--text-secondary); font-size: 1rem; margin-top: 0.35rem;">
+                    {{ profile_user.department }} • {{ profile_user.year }} • {{ profile_user.college }}
+                </div>
+                <div style="display: flex; gap: 0.75rem; margin-top: 0.75rem; flex-wrap: wrap;">
+                    <span class="rating-badge rating-tutor" style="font-size: 0.9rem; padding: 0.35rem 0.8rem;">
+                        <i class="ph-fill ph-star"></i> {{ profile_user.tutor_rating }} Tutor Rating ({{ profile_user.tutor_reviews_count }} sessions)
+                    </span>
+                    <span class="rating-badge rating-conduct" style="font-size: 0.9rem; padding: 0.35rem 0.8rem;">
+                        <i class="ph-fill ph-shield-check"></i> {{ profile_user.conduct_rating }} Safe Conduct & Respect Score ({{ profile_user.conduct_reviews_count }} reviews)
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.75rem; margin-top: 1.5rem;">
+        <!-- Left Column: Details, Skills, Experience, Reviews -->
+        <div>
+            <!-- Skills & Academic Profile Card -->
+            <div class="card" style="margin-bottom: 1.75rem;">
+                <h3 style="color: #ffffff; font-size: 1.2rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="ph ph-books" style="color: var(--primary);"></i>
+                    <span>Skills & Academic Profile</span>
+                </h3>
+
+                <div class="skill-section" style="margin-bottom: 1.25rem;">
+                    <div class="skill-label">Skills I Can Teach:</div>
+                    <div class="tags-list">
+                        {% for skill in profile_user.skills_teach.split(',') %}
+                            <span class="tag tag-teach" style="font-size: 0.88rem; padding: 0.35rem 0.75rem;">{{ skill.strip() }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="skill-section" style="margin-bottom: 1.25rem;">
+                    <div class="skill-label">Skills I Want To Learn:</div>
+                    <div class="tags-list">
+                        {% for skill in profile_user.skills_learn.split(',') %}
+                            <span class="tag tag-learn" style="font-size: 0.88rem; padding: 0.35rem 0.75rem;">{{ skill.strip() }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {% if profile_user.extra_skills %}
+                <div class="skill-section" style="margin-bottom: 1.25rem;">
+                    <div class="skill-label">Extra Skills & Certifications:</div>
+                    <div class="tags-list">
+                        {% for skill in profile_user.extra_skills.split(',') %}
+                            <span class="tag tag-extra" style="font-size: 0.88rem; padding: 0.35rem 0.75rem;">{{ skill.strip() }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <div style="margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--border-color);">
+                    <h4 style="color: #ffffff; font-size: 0.95rem; margin-bottom: 0.4rem;">Tutoring & Project Experience</h4>
+                    <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.55;">
+                        {{ profile_user.experience }}
+                    </p>
+                </div>
+
+                {% if profile_user.bio %}
+                <div style="margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--border-color);">
+                    <h4 style="color: #ffffff; font-size: 0.95rem; margin-bottom: 0.4rem;">About Me</h4>
+                    <p style="color: var(--text-secondary); font-size: 0.92rem; line-height: 1.55;">
+                        {{ profile_user.bio }}
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Reviews & Conduct Testimonials Card -->
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                    <h3 style="color: #ffffff; font-size: 1.2rem; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="ph ph-chat-circle-dots" style="color: var(--accent-cyan);"></i>
+                        <span>Student Reviews & Conduct Feedback</span>
+                    </h3>
+                    <span style="font-size: 0.85rem; color: var(--text-secondary);">
+                        {{ reviews|length }} verified reviews
+                    </span>
+                </div>
+
+                {% if reviews %}
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        {% for rev in reviews %}
+                        <div style="background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.2rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                                <div style="display: flex; align-items: center; gap: 0.65rem;">
+                                    <img src="{{ rev.reviewer_pic }}" style="width: 34px; height: 34px; border-radius: 50%; object-fit: cover;" alt="Reviewer">
+                                    <div>
+                                        <div style="color: #ffffff; font-size: 0.9rem; font-weight: 600;">{{ rev.reviewer_name }}</div>
+                                        <div style="color: var(--text-muted); font-size: 0.75rem;">{{ rev.reviewer_dept }}</div>
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 0.4rem;">
+                                    <span class="rating-badge rating-tutor" style="font-size: 0.75rem;">
+                                        <i class="ph-fill ph-star"></i> {{ rev.teaching_score }} Teaching
+                                    </span>
+                                    <span class="rating-badge rating-conduct" style="font-size: 0.75rem;">
+                                        <i class="ph-fill ph-shield-check"></i> {{ rev.conduct_score }} Respect
+                                    </span>
+                                </div>
+                            </div>
+                            <p style="color: #cbd5e1; font-size: 0.88rem; line-height: 1.5; margin: 0;">
+                                "{{ rev.comment }}"
+                            </p>
+                            <div style="color: var(--text-muted); font-size: 0.72rem; margin-top: 0.5rem;">
+                                Verified Session Review • {{ rev.created_at[:10] }}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; text-align: center; padding: 2rem 0;">
+                        No session reviews recorded yet. Book the first session to leave feedback!
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Right Column: 4th Interface Book Session Form -->
+        <div>
+            {% if current_user and current_user.id == profile_user.id %}
+                <div class="card" style="text-align: center; border-color: var(--primary);">
+                    <i class="ph ph-user-circle-gear" style="font-size: 3rem; color: var(--primary); margin-bottom: 0.75rem;"></i>
+                    <h3 style="color: #ffffff; font-size: 1.15rem; margin-bottom: 0.5rem;">Your Student Profile</h3>
+                    <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1.25rem;">
+                        This is how other students see your academic credentials, teaching skills, and conduct ratings.
+                    </p>
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <button type="button" class="btn btn-primary" onclick="openEditProfileModal()">
+                            <i class="ph ph-pencil-simple"></i> Edit Profile Details
+                        </button>
+                        <a href="{{ url_for('my_sessions') }}" class="btn btn-secondary">
+                            <i class="ph ph-calendar-check"></i> Manage Your Sessions
+                        </a>
+                    </div>
+                </div>
+            {% else %}
+                <div id="schedule" class="card" style="background: #0d131f; border-color: var(--border-color); position: sticky; top: 90px;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                        <i class="ph ph-calendar-plus" style="color: var(--accent-emerald); font-size: 1.5rem;"></i>
+                        <h3 style="color: #ffffff; font-size: 1.15rem; margin: 0;">Schedule a Tutoring Session</h3>
+                    </div>
+
+                    {% if not current_user %}
+                        <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 1.25rem;">
+                            Log in with your student credentials to book 1-on-1 mentorship with {{ profile_user.name.split(' ')[0] }}.
+                        </p>
+                        <a href="{{ url_for('login', next=request.url) }}" class="btn btn-primary" style="width: 100%;">
+                            <i class="ph ph-sign-in"></i> Log In to Book
+                        </a>
+                    {% else %}
+                        <form action="{{ url_for('schedule_session', tutor_id=profile_user.id) }}" method="POST">
+                            <div class="form-group">
+                                <label class="form-label">Skill / Topic to Learn *</label>
+                                <input type="text" name="skill_topic" class="form-control" 
+                                       placeholder="e.g. {{ profile_user.skills_teach.split(',')[0].strip() }}" 
+                                       value="{{ profile_user.skills_teach.split(',')[0].strip() }}" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Preferred Date *</label>
+                                <input type="date" name="session_date" class="form-control" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Preferred Time *</label>
+                                <input type="time" name="session_time" class="form-control" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Meeting Format</label>
+                                <select name="meet_mode" class="form-select">
+                                    <option value="Google Meet">Google Meet (Auto-generated)</option>
+                                    <option value="Campus Central Library">Campus Central Library</option>
+                                    <option value="Discord Study Room">Discord Study Channel</option>
+                                    <option value="Zoom">Zoom</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Notes / Questions for Tutor</label>
+                                <textarea name="notes" rows="2" class="form-control" placeholder="What specific problem, lecture, or project do you need guidance on?"></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; margin-top: 0.5rem;">
+                                <i class="ph ph-paper-plane-tilt"></i>
+                                <span>Request Tutoring Session</span>
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Edit Profile Modal -->
+{% if current_user and current_user.id == profile_user.id %}
+<div id="editProfileModal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 650px;">
+        <div class="modal-header">
+            <div>
+                <h3 class="modal-title">Edit Your Profile</h3>
+                <div style="font-size: 0.82rem; color: var(--text-secondary); margin-top: 2px;">Update skills, academic info & bio</div>
+            </div>
+            <button class="modal-close" onclick="closeEditProfileModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form action="{{ url_for('my_profile') }}" method="POST">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" name="name" class="form-control" value="{{ profile_user.name }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Department</label>
+                        <input type="text" name="department" class="form-control" value="{{ profile_user.department }}" required>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Academic Standing / CGPA</label>
+                        <input type="text" name="academic_performance" class="form-control" value="{{ profile_user.academic_performance }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Academic Year</label>
+                        <input type="text" name="year" class="form-control" value="{{ profile_user.year }}">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Skills I Can Teach (Comma-separated)</label>
+                    <input type="text" name="skills_teach" class="form-control" value="{{ profile_user.skills_teach }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Skills I Want To Learn (Comma-separated)</label>
+                    <input type="text" name="skills_learn" class="form-control" value="{{ profile_user.skills_learn }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Experience</label>
+                    <input type="text" name="experience" class="form-control" value="{{ profile_user.experience }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Extra Skills & Honors</label>
+                    <input type="text" name="extra_skills" class="form-control" value="{{ profile_user.extra_skills }}">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">About Me Bio</label>
+                    <textarea name="bio" rows="2" class="form-control">{{ profile_user.bio }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Avatar Image URL</label>
+                    <input type="url" name="profile_pic" class="form-control" value="{{ profile_user.profile_pic }}">
+                </div>
+
+                <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
+                    <button type="button" class="btn btn-outline" style="flex: 1;" onclick="closeEditProfileModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="flex: 2;">Save Profile Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+function openEditProfileModal() {
+    const modal = document.getElementById('editProfileModal');
+    if (modal) modal.classList.add('active');
+}
+
+function closeEditProfileModal() {
+    const modal = document.getElementById('editProfileModal');
+    if (modal) modal.classList.remove('active');
+}
+
+const todayDate = new Date().toISOString().split('T')[0];
+document.querySelectorAll('input[type="date"]').forEach(el => el.min = todayDate);
+
+window.addEventListener('click', function(e) {
+    const modal = document.getElementById('editProfileModal');
+    if (e.target === modal) {
+        closeEditProfileModal();
+    }
+});
+</script>
+{% endblock %}

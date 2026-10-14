@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}Notes & Resource Locker | CampusSkillSwap{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2rem;">
+    <!-- Resource Locker Header Banner with Library Image -->
+    <div style="background: linear-gradient(180deg, rgba(6, 9, 15, 0.4) 0%, rgba(13, 19, 31, 0.95) 100%),
+                url('https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=1200&q=80') center/cover;
+                border-radius: var(--radius-lg); border: 1px solid var(--border-color); padding: 2.5rem 2rem; margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1.5rem;">
+            <div>
+                <div class="hero-pill" style="margin-bottom: 0.5rem;">
+                    <i class="ph ph-books" style="color: var(--accent-amber);"></i>
+                    <span>Campus Digital Study Locker</span>
+                </div>
+                <h1 style="color: #ffffff; font-size: 2.2rem; font-weight: 800; margin: 0;">Notes & Academic Resources</h1>
+                <p style="color: var(--text-secondary); font-size: 0.95rem; margin-top: 0.35rem; max-width: 650px;">
+                    Exchange hand-written lecture notes, quick cheat sheets, solved question banks, and coding repositories with your peers.
+                </p>
+            </div>
+            {% if current_user %}
+                <button type="button" class="btn btn-primary btn-lg" onclick="openUploadModal()">
+                    <i class="ph ph-upload-simple"></i>
+                    <span>Share Study Notes</span>
+                </button>
+            {% else %}
+                <a href="{{ url_for('login', next=request.url) }}" class="btn btn-primary btn-lg">
+                    <i class="ph ph-sign-in"></i>
+                    <span>Log In to Share Notes</span>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Search & Domain Filter Bar -->
+    <div style="background: #0d131f; border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; margin-bottom: 2rem;">
+        <form action="{{ url_for('resources') }}" method="GET" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <div style="flex: 2; min-width: 240px;">
+                <input 
+                    type="text" 
+                    name="q" 
+                    value="{{ query }}" 
+                    class="form-control" 
+                    placeholder="Search notes by subject, topic, or keyword (e.g. Algorithms, Calculus, ML...)"
+                >
+            </div>
+            <div style="flex: 1; min-width: 180px;">
+                <select name="domain" class="form-select">
+                    <option value="">All Academic Domains</option>
+                    {% for d in domains %}
+                        <option value="{{ d }}" {% if selected_domain == d %}selected{% endif %}>{{ d }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="ph ph-magnifying-glass"></i> Filter
+            </button>
+            {% if query or selected_domain %}
+                <a href="{{ url_for('resources') }}" class="btn btn-secondary" title="Clear filter">
+                    <i class="ph ph-arrow-counter-clockwise"></i>
+                </a>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Resources Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem;">
+        {% for res in resources %}
+        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+                    <span class="tag tag-teach">{{ res.domain }}</span>
+                    {% if res.skill_tag %}
+                        <span class="tag tag-learn">{{ res.skill_tag }}</span>
+                    {% endif %}
+                </div>
+
+                <h3 style="color: #ffffff; font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem; line-height: 1.35;">
+                    {{ res.title }}
+                </h3>
+
+                <p style="color: var(--text-secondary); font-size: 0.88rem; line-height: 1.5; margin-bottom: 1.25rem;">
+                    {{ res.description }}
+                </p>
+            </div>
+
+            <div>
+                <!-- Author & Download Stats -->
+                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid var(--border-color); margin-bottom: 1rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <img src="{{ res.author_pic }}" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;" alt="Author">
+                        <div style="font-size: 0.8rem; color: #cbd5e1;">
+                            {{ res.author_name }}
+                        </div>
+                    </div>
+                    <div style="font-size: 0.78rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.3rem;">
+                        <i class="ph ph-download-simple"></i> {{ res.downloads }} downloads
+                    </div>
+                </div>
+
+                <!-- Download / View Button -->
+                <a href="{{ url_for('download_resource', resource_id=res.id) }}" class="btn btn-secondary btn-sm" style="width: 100%; justify-content: center;" target="_blank">
+                    <i class="ph ph-arrow-down-to-line"></i>
+                    <span>Access Resource Material</span>
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 3rem 1.5rem;">
+            <i class="ph ph-folder-dashed" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 0.75rem;"></i>
+            <h3 style="color: #ffffff; font-size: 1.15rem; margin-bottom: 0.35rem;">No resources found</h3>
+            <p style="color: var(--text-secondary); font-size: 0.88rem;">
+                Be the first to share notes or lecture summaries in this domain!
+            </p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Upload Resource Modal -->
+<div id="uploadModal" class="modal-overlay">
+    <div class="modal-card">
+        <div class="modal-header">
+            <div>
+                <h3 class="modal-title">Share Study Resource</h3>
+                <div style="font-size: 0.82rem; color: var(--text-secondary); margin-top: 2px;">
+                    Upload lecture notes, cheat sheets, or share study links
+                </div>
+            </div>
+            <button class="modal-close" onclick="closeUploadModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form action="{{ url_for('upload_resource') }}" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label class="form-label">Resource Title *</label>
+                    <input type="text" name="title" class="form-control" placeholder="e.g. Operating Systems Process Scheduling Summary" required>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Domain / Subject</label>
+                        <select name="domain" class="form-select">
+                            <option value="Computer Science">Computer Science</option>
+                            <option value="AI & Data Science">AI & Data Science</option>
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="Information Technology">Information Technology</option>
+                            <option value="Electronics & Hardware">Electronics & Hardware</option>
+                            <option value="General Science">General Science</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Skill Tag</label>
+                        <input type="text" name="skill_tag" class="form-control" placeholder="e.g. Python, OS, Calculus">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Brief Description</label>
+                    <textarea name="description" rows="2" class="form-control" placeholder="Explain what topics are covered in these notes..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Upload File (PDF, DOCX, ZIP, PY, IPYNB)</label>
+                    <input type="file" name="file" class="form-control" style="padding: 0.5rem;">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">OR External Link (GitHub, Google Drive, Notion)</label>
+                    <input type="url" name="external_link" class="form-control" placeholder="https://github.com/... or https://drive.google.com/...">
+                </div>
+
+                <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
+                    <button type="button" class="btn btn-outline" style="flex: 1;" onclick="closeUploadModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="flex: 2;">
+                        <i class="ph ph-upload-simple"></i> Upload to Locker
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function openUploadModal() {
+    const modal = document.getElementById('uploadModal');
+    modal.classList.add('active');
+}
+
+function closeUploadModal() {
+    const modal = document.getElementById('uploadModal');
+    modal.classList.remove('active');
+}
+
+window.addEventListener('click', function(e) {
+    const modal = document.getElementById('uploadModal');
+    if (e.target === modal) {
+        closeUploadModal();
+    }
+});
+</script>
+{% endblock %}

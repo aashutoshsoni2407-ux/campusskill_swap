@@ -1,0 +1,313 @@
+{% extends "base.html" %}
+
+{% block title %}My Tutoring Sessions | CampusSkillSwap{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2rem;">
+    <div class="section-header">
+        <div>
+            <div class="hero-pill" style="margin-bottom: 0.5rem;">
+                <i class="ph ph-calendar-check" style="color: var(--accent-emerald);"></i>
+                <span>1-on-1 Mentorship Schedule</span>
+            </div>
+            <h1 class="section-title">My Sessions & Mutual Reviews</h1>
+            <p class="section-subtitle">Manage upcoming sessions, accept mentorship requests, and submit post-session conduct ratings.</p>
+        </div>
+        <a href="{{ url_for('search') }}" class="btn btn-primary btn-sm">
+            <i class="ph ph-plus"></i> Book Another Session
+        </a>
+    </div>
+
+    <!-- Sessions Tabs -->
+    <div style="display: flex; gap: 0.75rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+        <button id="tabStudentBtn" class="btn btn-secondary btn-sm" onclick="showTab('student')" style="background: var(--primary); color: #fff;">
+            <i class="ph ph-student"></i> Sessions as Student ({{ as_student|length }})
+        </button>
+        <button id="tabTutorBtn" class="btn btn-secondary btn-sm" onclick="showTab('tutor')">
+            <i class="ph ph-chalkboard-teacher"></i> Mentoring Requests as Tutor ({{ as_tutor|length }})
+        </button>
+    </div>
+
+    <!-- Section 1: As Student -->
+    <div id="studentSessions">
+        {% if as_student %}
+            <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                {% for s in as_student %}
+                <div class="card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.25rem;">
+                    <div style="display: flex; gap: 1.25rem; align-items: center;">
+                        <img src="{{ s.partner_pic }}" style="width: 54px; height: 54px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border-color);" alt="Tutor">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 0.65rem;">
+                                <h3 style="color: #ffffff; font-size: 1.1rem; margin: 0;">{{ s.skill_topic }}</h3>
+                                <span class="status-badge status-{{ s.status }}">{{ s.status }}</span>
+                            </div>
+                            <div style="color: var(--text-secondary); font-size: 0.88rem; margin-top: 0.25rem;">
+                                Tutor: <strong>{{ s.partner_name }}</strong> ({{ s.partner_dept }}) • 
+                                <i class="ph ph-calendar"></i> {{ s.session_date }} at {{ s.session_time }} ({{ s.duration_minutes }} mins)
+                            </div>
+                            <div style="color: var(--text-muted); font-size: 0.82rem; margin-top: 0.25rem;">
+                                <i class="ph ph-video-camera"></i> Mode: {{ s.meet_mode }} 
+                                {% if s.meet_link %} • <a href="{{ s.meet_link }}" target="_blank" style="color: var(--accent-cyan);">Join Link</a>{% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 0.65rem; align-items: center;">
+                        {% if s.status == 'accepted' %}
+                            <form action="{{ url_for('update_session_status', session_id=s.id) }}" method="POST" style="margin: 0;">
+                                <input type="hidden" name="status" value="completed">
+                                <button type="submit" class="btn btn-success btn-sm">
+                                    <i class="ph ph-check-circle"></i> Mark Completed
+                                </button>
+                            </form>
+                        {% endif %}
+
+                        {% if s.status == 'completed' %}
+                            {% if not s.student_rated %}
+                                <button 
+                                    type="button" 
+                                    class="btn btn-primary btn-sm rate-btn"
+                                    data-session-id="{{ s.id }}"
+                                    data-partner-name="{{ s.partner_name }}"
+                                    data-role="tutor"
+                                >
+                                    <i class="ph ph-star"></i> Rate Tutor & Conduct
+                                </button>
+                            {% else %}
+                                <span class="rating-badge rating-conduct" style="font-size: 0.82rem;">
+                                    <i class="ph-fill ph-check"></i> Feedback Submitted
+                                </span>
+                            {% endif %}
+                        {% endif %}
+
+                        {% if s.status == 'pending' %}
+                            <span style="font-size: 0.85rem; color: var(--accent-amber);">
+                                <i class="ph ph-hourglass-medium"></i> Awaiting Tutor Confirmation
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="card" style="text-align: center; padding: 3rem 1.5rem;">
+                <i class="ph ph-student" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 0.75rem;"></i>
+                <h3 style="color: #ffffff; font-size: 1.15rem; margin-bottom: 0.35rem;">No student sessions scheduled yet</h3>
+                <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 1.25rem;">
+                    Search for a skill you want to learn and book your first 1-on-1 peer mentoring session!
+                </p>
+                <a href="{{ url_for('search') }}" class="btn btn-primary btn-sm">Browse Matching Tutors</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Section 2: As Tutor -->
+    <div id="tutorSessions" style="display: none;">
+        {% if as_tutor %}
+            <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                {% for s in as_tutor %}
+                <div class="card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.25rem;">
+                    <div style="display: flex; gap: 1.25rem; align-items: center;">
+                        <img src="{{ s.partner_pic }}" style="width: 54px; height: 54px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border-color);" alt="Student">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 0.65rem;">
+                                <h3 style="color: #ffffff; font-size: 1.1rem; margin: 0;">{{ s.skill_topic }}</h3>
+                                <span class="status-badge status-{{ s.status }}">{{ s.status }}</span>
+                            </div>
+                            <div style="color: var(--text-secondary); font-size: 0.88rem; margin-top: 0.25rem;">
+                                Learner: <strong>{{ s.partner_name }}</strong> ({{ s.partner_dept }}) • 
+                                <i class="ph ph-calendar"></i> {{ s.session_date }} at {{ s.session_time }}
+                            </div>
+                            {% if s.notes %}
+                            <div style="color: var(--text-muted); font-size: 0.82rem; margin-top: 0.25rem;">
+                                Student's message: "{{ s.notes }}"
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 0.65rem; align-items: center;">
+                        {% if s.status == 'pending' %}
+                            <form action="{{ url_for('update_session_status', session_id=s.id) }}" method="POST" style="margin: 0; display: inline;">
+                                <input type="hidden" name="status" value="accepted">
+                                <button type="submit" class="btn btn-success btn-sm">
+                                    <i class="ph ph-check"></i> Accept
+                                </button>
+                            </form>
+                            <form action="{{ url_for('update_session_status', session_id=s.id) }}" method="POST" style="margin: 0; display: inline;">
+                                <input type="hidden" name="status" value="declined">
+                                <button type="submit" class="btn btn-outline btn-sm" style="color: var(--accent-rose);">
+                                    <i class="ph ph-x"></i> Decline
+                                </button>
+                            </form>
+                        {% elif s.status == 'accepted' %}
+                            <form action="{{ url_for('update_session_status', session_id=s.id) }}" method="POST" style="margin: 0;">
+                                <input type="hidden" name="status" value="completed">
+                                <button type="submit" class="btn btn-success btn-sm">
+                                    <i class="ph ph-check-circle"></i> Mark Completed
+                                </button>
+                            </form>
+                        {% elif s.status == 'completed' %}
+                            {% if not s.tutor_rated %}
+                                <button 
+                                    type="button" 
+                                    class="btn btn-primary btn-sm rate-btn"
+                                    data-session-id="{{ s.id }}"
+                                    data-partner-name="{{ s.partner_name }}"
+                                    data-role="student"
+                                >
+                                    <i class="ph ph-star"></i> Rate Student & Conduct
+                                </button>
+                            {% else %}
+                                <span class="rating-badge rating-conduct" style="font-size: 0.82rem;">
+                                    <i class="ph-fill ph-check"></i> Feedback Submitted
+                                </span>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="card" style="text-align: center; padding: 3rem 1.5rem;">
+                <i class="ph ph-chalkboard-teacher" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 0.75rem;"></i>
+                <h3 style="color: #ffffff; font-size: 1.15rem; margin-bottom: 0.35rem;">No incoming tutoring requests yet</h3>
+                <p style="color: var(--text-secondary); font-size: 0.88rem;">
+                    When students search for the skills you teach and book a session, their requests will appear here.
+                </p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- 6th Interface: Reciprocal Review & Respectful Conduct Rating Modal -->
+<div id="ratingModal" class="modal-overlay">
+    <div class="modal-card">
+        <div class="modal-header">
+            <div>
+                <h3 class="modal-title" id="ratingModalTitle">Submit Session Feedback</h3>
+                <div style="font-size: 0.82rem; color: var(--text-secondary); margin-top: 2px;">
+                    Mutual rating of teaching effectiveness & respectful peer conduct
+                </div>
+            </div>
+            <button class="modal-close" onclick="closeRatingModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="ratingForm" method="POST" action="">
+                <!-- Teaching / Engagement Score -->
+                <div class="form-group">
+                    <label class="form-label" id="teachingScoreLabel">1. Teaching Quality & Knowledge Clarity (1 to 5 Stars)</label>
+                    <select name="teaching_score" class="form-select" required>
+                        <option value="5.0">★★★★★ 5.0 - Outstanding & Extremely Clear</option>
+                        <option value="4.5">★★★★½ 4.5 - Very Good & Helpful</option>
+                        <option value="4.0">★★★★☆ 4.0 - Good Explanations</option>
+                        <option value="3.0">★★★☆☆ 3.0 - Average</option>
+                        <option value="2.0">★★☆☆☆ 2.0 - Needs Improvement</option>
+                    </select>
+                </div>
+
+                <!-- Conduct & Respect Score -->
+                <div class="form-group" style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: var(--radius-md); padding: 1rem;">
+                    <label class="form-label" style="color: #6ee7b7;">
+                        <i class="ph ph-shield-check"></i> 
+                        2. Respectful Conduct & Safe Peer Behavior (1 to 5 Stars)
+                    </label>
+                    <select name="conduct_score" class="form-select" required style="border-color: rgba(16, 185, 129, 0.4);">
+                        <option value="5.0">★★★★★ 5.0 - Exemplary Respect, Professionalism & Safety</option>
+                        <option value="4.5">★★★★½ 4.5 - Very Respectful & Polite</option>
+                        <option value="4.0">★★★★☆ 4.0 - Courteous & Good Conduct</option>
+                        <option value="3.0">★★★☆☆ 3.0 - Adequate</option>
+                        <option value="1.0">★☆☆☆☆ 1.0 - Disrespectful / Unprofessional</option>
+                    </select>
+                    <div class="form-hint" style="color: #94a3b8;">
+                        Directly contributes to the mentor's official Conduct & Women-Safety rating index.
+                    </div>
+                </div>
+
+                <!-- Written Review Comment -->
+                <div class="form-group">
+                    <label class="form-label">Written Feedback / Review *</label>
+                    <textarea 
+                        name="comment" 
+                        rows="3" 
+                        class="form-control" 
+                        placeholder="Share your experience during this session. Was the peer tutor patient, respectful, and clear in explanations?" 
+                        required
+                    ></textarea>
+                </div>
+
+                <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
+                    <button type="button" class="btn btn-outline" style="flex: 1;" onclick="closeRatingModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="flex: 2;">
+                        <i class="ph ph-check-circle"></i> Submit Rating & Conduct Review
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showTab(type) {
+    const studentDiv = document.getElementById('studentSessions');
+    const tutorDiv = document.getElementById('tutorSessions');
+    const studentBtn = document.getElementById('tabStudentBtn');
+    const tutorBtn = document.getElementById('tabTutorBtn');
+
+    if (type === 'student') {
+        studentDiv.style.display = 'block';
+        tutorDiv.style.display = 'none';
+        studentBtn.style.background = 'var(--primary)';
+        studentBtn.style.color = '#fff';
+        tutorBtn.style.background = '#182235';
+        tutorBtn.style.color = '#e2e8f0';
+    } else {
+        studentDiv.style.display = 'none';
+        tutorDiv.style.display = 'block';
+        tutorBtn.style.background = 'var(--primary)';
+        tutorBtn.style.color = '#fff';
+        studentBtn.style.background = '#182235';
+        studentBtn.style.color = '#e2e8f0';
+    }
+}
+
+function openRatingModal(sessionId, partnerName, role) {
+    const modal = document.getElementById('ratingModal');
+    const form = document.getElementById('ratingForm');
+    const title = document.getElementById('ratingModalTitle');
+    const label = document.getElementById('teachingScoreLabel');
+
+    form.action = '/session/' + sessionId + '/rate';
+    title.innerText = 'Rate Session with ' + partnerName;
+
+    if (role === 'student') {
+        label.innerText = '1. Student Engagement & Preparation (1 to 5 Stars)';
+    } else {
+        label.innerText = '1. Teaching Quality & Knowledge Clarity (1 to 5 Stars)';
+    }
+
+    modal.classList.add('active');
+}
+
+function closeRatingModal() {
+    const modal = document.getElementById('ratingModal');
+    modal.classList.remove('active');
+}
+
+// Attach listeners to all rate buttons
+document.querySelectorAll('.rate-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        openRatingModal(this.dataset.sessionId, this.dataset.partnerName, this.dataset.role);
+    });
+});
+
+window.addEventListener('click', function(e) {
+    const modal = document.getElementById('ratingModal');
+    if (e.target === modal) {
+        closeRatingModal();
+    }
+});
+</script>
+{% endblock %}

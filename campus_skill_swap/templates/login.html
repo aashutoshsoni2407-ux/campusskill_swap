@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Log In | CampusSkillSwap{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 480px; padding-top: 3.5rem; padding-bottom: 4rem;">
+    <!-- Collegiate Badge Card -->
+    <div class="card" style="background: #0b101c; border-color: var(--border-color); box-shadow: var(--shadow-lg);">
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <div class="brand-icon" style="width: 54px; height: 54px; font-size: 1.6rem; margin: 0 auto 1rem; border-radius: var(--radius-lg);">
+                <i class="ph ph-lock-key"></i>
+            </div>
+            <h1 style="color: #ffffff; font-size: 1.6rem; font-weight: 700;">Student Portal Login</h1>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.25rem;">
+                Access your tutoring sessions, notes locker, and matches.
+            </p>
+        </div>
+
+        <form action="{{ url_for('login') }}" method="POST" id="loginForm">
+            <div class="form-group">
+                <label class="form-label">Campus Email</label>
+                <div style="position: relative;">
+                    <input 
+                        type="email" 
+                        id="emailInput"
+                        name="email" 
+                        class="form-control" 
+                        placeholder="yourname@campus.edu" 
+                        required 
+                        autocomplete="email"
+                    >
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label class="form-label">Password</label>
+                <input 
+                    type="password" 
+                    id="passwordInput"
+                    name="password" 
+                    class="form-control" 
+                    placeholder="••••••••" 
+                    required 
+                    autocomplete="current-password"
+                >
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+                <i class="ph ph-sign-in"></i>
+                <span>Log In</span>
+            </button>
+        </form>
+
+        <!-- 1-Click Instant Demo Login Buttons -->
+        <div style="margin-top: 1.75rem; padding: 1.15rem; background: rgba(99, 102, 241, 0.08); border: 1px dashed rgba(99, 102, 241, 0.4); border-radius: var(--radius-md);">
+            <div style="font-size: 0.82rem; font-weight: 700; color: #a5b4fc; text-transform: uppercase; margin-bottom: 0.65rem; display: flex; align-items: center; justify-content: space-between;">
+                <span style="display: flex; align-items: center; gap: 0.35rem;">
+                    <i class="ph ph-lightning"></i>
+                    <span>1-Click Instant Demo Login</span>
+                </span>
+                <span style="font-size: 0.72rem; color: var(--accent-cyan); text-transform: none;">No typing needed</span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr; gap: 0.5rem; margin-bottom: 0.75rem;">
+                <a href="{{ url_for('demo_login', demo_user='aarav') }}" class="btn btn-secondary btn-sm" style="display: flex; justify-content: space-between; align-items: center; padding: 0.55rem 0.85rem; text-align: left;">
+                    <span><strong>⚡ Aarav Sharma</strong> (CS Peer Tutor)</span>
+                    <span style="font-size: 0.75rem; color: var(--accent-emerald);">★ 5.0 Conduct</span>
+                </a>
+                <a href="{{ url_for('demo_login', demo_user='ananya') }}" class="btn btn-secondary btn-sm" style="display: flex; justify-content: space-between; align-items: center; padding: 0.55rem 0.85rem; text-align: left;">
+                    <span><strong>⚡ Ananya Iyer</strong> (AI & ML Tutor)</span>
+                    <span style="font-size: 0.75rem; color: var(--accent-emerald);">★ 5.0 Conduct</span>
+                </a>
+                <a href="{{ url_for('demo_login', demo_user='priya') }}" class="btn btn-secondary btn-sm" style="display: flex; justify-content: space-between; align-items: center; padding: 0.55rem 0.85rem; text-align: left;">
+                    <span><strong>⚡ Priya Nair</strong> (UI/UX & Web Dev)</span>
+                    <span style="font-size: 0.75rem; color: var(--accent-cyan);">9.1 CGPA</span>
+                </a>
+            </div>
+
+            <!-- Auto-Fill Form Option -->
+            <div style="font-size: 0.78rem; color: var(--text-muted); border-top: 1px solid rgba(255, 255, 255, 0.06); padding-top: 0.65rem; display: flex; justify-content: space-between; align-items: center;">
+                <span>Or autofill form:</span>
+                <div style="display: flex; gap: 0.35rem;">
+                    <button type="button" class="btn btn-outline btn-sm" style="font-size: 0.72rem; padding: 0.2rem 0.5rem;" onclick="fillForm('aarav@campus.edu', 'password123')">Aarav</button>
+                    <button type="button" class="btn btn-outline btn-sm" style="font-size: 0.72rem; padding: 0.2rem 0.5rem;" onclick="fillForm('ananya@campus.edu', 'password123')">Ananya</button>
+                    <button type="button" class="btn btn-outline btn-sm" style="font-size: 0.72rem; padding: 0.2rem 0.5rem;" onclick="fillForm('priya@campus.edu', 'password123')">Priya</button>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-color); color: var(--text-secondary); font-size: 0.9rem;">
+            New to CampusSkillSwap? <br>
+            <a href="{{ url_for('register') }}" class="btn btn-outline btn-sm" style="margin-top: 0.65rem; width: 100%;">
+                <i class="ph ph-user-plus"></i> Create New Student Account
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function fillForm(email, password) {
+    const emailField = document.getElementById('emailInput');
+    const passwordField = document.getElementById('passwordInput');
+    if (emailField) emailField.value = email;
+    if (passwordField) passwordField.value = password;
+}
+</script>
+{% endblock %}

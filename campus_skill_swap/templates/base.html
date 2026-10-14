@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CampusSkillSwap | Peer-to-Peer Student Skill Exchange{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Phosphor Icons for modern sleek UI -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    {% block head %}{% endblock %}
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('index') }}" class="brand">
+                <div class="brand-icon">
+                    <i class="ph ph-graduation-cap"></i>
+                </div>
+                <span>Campus<span style="color: var(--accent-cyan);">Swap</span></span>
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="{{ url_for('index') }}" class="nav-link"><i class="ph ph-house"></i> Home</a></li>
+                <li><a href="{{ url_for('search') }}" class="nav-link"><i class="ph ph-magnifying-glass"></i> Find Tutors</a></li>
+                <li><a href="{{ url_for('resources') }}" class="nav-link"><i class="ph ph-books"></i> Notes Locker</a></li>
+                {% if current_user %}
+                <li><a href="{{ url_for('my_sessions') }}" class="nav-link"><i class="ph ph-calendar-check"></i> My Sessions</a></li>
+                {% endif %}
+            </ul>
+
+            <div class="nav-cta">
+                {% if current_user %}
+                    <a href="{{ url_for('profile', user_id=current_user.id) }}" class="btn btn-secondary btn-sm">
+                        <img src="{{ current_user.profile_pic }}" style="width: 22px; height: 22px; border-radius: 50%; object-fit: cover;" alt="Avatar">
+                        <span>{{ current_user.name.split(' ')[0] }}</span>
+                    </a>
+                    <a href="{{ url_for('logout') }}" class="btn btn-outline btn-sm">
+                        <i class="ph ph-sign-out"></i> Logout
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="btn btn-outline btn-sm">Log In</a>
+                    <a href="{{ url_for('register') }}" class="btn btn-primary btn-sm">
+                        <i class="ph ph-user-plus"></i> Join Network
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-container">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <div style="display: flex; align-items: center; gap: 0.65rem;">
+                            <i class="ph ph-info" style="font-size: 1.2rem;"></i>
+                            <span>{{ message }}</span>
+                        </div>
+                        <button onclick="this.parentElement.remove()" style="background: none; border: none; color: inherit; cursor: pointer; font-size: 1.1rem;">&times;</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Content Block -->
+    <main style="flex: 1;">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div class="brand-icon" style="width: 30px; height: 30px; font-size: 0.9rem;">
+                    <i class="ph ph-graduation-cap"></i>
+                </div>
+                <span style="color: #ffffff; font-weight: 700;">CampusSkillSwap</span>
+                <span style="color: var(--text-muted);">| Pure Python Student Mentorship Platform</span>
+            </div>
+            <div>
+                <p>&copy; 2026 CampusSkillSwap. Safe, Respectful, & Collaborative Peer Learning.</p>
+            </div>
+        </div>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

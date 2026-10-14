@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}Join CampusSkillSwap | Student Registration{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 900px; padding-top: 2rem; padding-bottom: 3.5rem;">
+    <!-- Collegiate Banner Header -->
+    <div style="background: linear-gradient(180deg, rgba(6, 9, 15, 0.4) 0%, rgba(13, 19, 31, 0.95) 100%),
+                url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80') center/cover;
+                height: 180px; border-radius: var(--radius-lg) var(--radius-lg) 0 0; border: 1px solid var(--border-color); border-bottom: none;
+                display: flex; align-items: flex-end; padding: 1.75rem;">
+        <div>
+            <div class="hero-pill" style="margin-bottom: 0.5rem;">
+                <i class="ph ph-sparkle" style="color: var(--accent-cyan);"></i>
+                <span>Student Network Registration</span>
+            </div>
+            <h1 style="color: #ffffff; font-size: 2rem; font-weight: 800; line-height: 1.2;">Create Your Peer Tutor & Mentorship Profile</h1>
+        </div>
+    </div>
+
+    <!-- Registration Card with Blackish Undertones -->
+    <div class="card" style="border-radius: 0 0 var(--radius-lg) var(--radius-lg); background: #0b101c; border-top: none;">
+        <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 0.95rem;">
+            Join your fellow students to exchange academic skills, mentor peers, and earn verified conduct & teaching credentials.
+        </p>
+
+        <form action="{{ url_for('register') }}" method="POST">
+            <!-- Section 1: Account & College Info -->
+            <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem; margin-bottom: 1.75rem;">
+                <h3 style="font-size: 1.15rem; color: #ffffff; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="ph ph-identification-card" style="color: var(--primary);"></i>
+                    <span>1. Basic & College Credentials</span>
+                </h3>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.25rem;">
+                    <div class="form-group">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" name="name" class="form-control" placeholder="e.g. Alex Johnson" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">College Email *</label>
+                        <input type="email" name="email" class="form-control" placeholder="alex@campus.edu" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Password *</label>
+                        <input type="password" name="password" class="form-control" placeholder="Create a strong password" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Gender (For Safe Peer Matching & Verification)</label>
+                        <select name="gender" class="form-select">
+                            <option value="Female">Female</option>
+                            <option value="Male">Male</option>
+                            <option value="Non-Binary">Non-Binary</option>
+                            <option value="Prefer not to say" selected>Prefer not to say</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">College / Institute Name</label>
+                        <input type="text" name="college" class="form-control" placeholder="e.g. Apex Institute of Technology">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Department / Major</label>
+                        <input type="text" name="department" class="form-control" placeholder="e.g. Computer Science & Engineering">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Academic Year</label>
+                        <select name="year" class="form-select">
+                            <option value="1st Year">1st Year</option>
+                            <option value="2nd Year" selected>2nd Year</option>
+                            <option value="3rd Year">3rd Year</option>
+                            <option value="4th Year">4th Year</option>
+                            <option value="Graduate / Post-Grad">Graduate / Post-Grad</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Core Skill Swap -->
+            <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem; margin-bottom: 1.75rem;">
+                <h3 style="font-size: 1.15rem; color: #ffffff; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="ph ph-arrows-left-right" style="color: var(--accent-cyan);"></i>
+                    <span>2. Skill Swap Core</span>
+                </h3>
+
+                <div class="form-group">
+                    <label class="form-label">Skills I Can Teach *</label>
+                    <input 
+                        type="text" 
+                        name="skills_teach" 
+                        class="form-control" 
+                        placeholder="e.g. Python, Data Structures, Algorithms, Calculus, UI/UX" 
+                        required
+                    >
+                    <div class="form-hint">Separate multiple skills with commas. These will be indexed for other students searching for mentors.</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Skills I Want To Learn *</label>
+                    <input 
+                        type="text" 
+                        name="skills_learn" 
+                        class="form-control" 
+                        placeholder="e.g. Machine Learning, Cloud Architecture, Linear Algebra, React" 
+                        required
+                    >
+                    <div class="form-hint">Skills you want help with. Helps students find matching peer exchange partners.</div>
+                </div>
+            </div>
+
+            <!-- Section 3: Academic Performance & Experience -->
+            <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem; margin-bottom: 1.75rem;">
+                <h3 style="font-size: 1.15rem; color: #ffffff; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="ph ph-chart-line-up" style="color: var(--accent-emerald);"></i>
+                    <span>3. Academic Performance & Tutoring Experience</span>
+                </h3>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.25rem;">
+                    <div class="form-group">
+                        <label class="form-label">Academic Performance & Standing *</label>
+                        <input 
+                            type="text" 
+                            name="academic_performance" 
+                            class="form-control" 
+                            placeholder="e.g. CGPA: 9.3 / 10.0 (Dean's List)" 
+                            required
+                        >
+                        <div class="form-hint">Showcase your GPA, honors, or department rank to build trust with learners.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Tutoring & Project Experience *</label>
+                        <input 
+                            type="text" 
+                            name="experience" 
+                            class="form-control" 
+                            placeholder="e.g. 2 years tutoring CS101, built 3 full-stack web apps" 
+                            required
+                        >
+                        <div class="form-hint">Prior teaching, TA roles, or practical coding/project work.</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Extra Skills & Certifications</label>
+                    <input 
+                        type="text" 
+                        name="extra_skills" 
+                        class="form-control" 
+                        placeholder="e.g. AWS Certified, Hackathon Winner 2025, LaTeX typesetting, Public Speaking"
+                    >
+                    <div class="form-hint">Certifications, competition awards, or leadership skills.</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">About Me / Teaching Philosophy</label>
+                    <textarea 
+                        name="bio" 
+                        rows="3" 
+                        class="form-control" 
+                        placeholder="Introduce yourself, your tutoring style, patience, and when you are typically free for sessions..."
+                    ></textarea>
+                </div>
+            </div>
+
+            <!-- Conduct & Community Pledge -->
+            <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 2rem;">
+                <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+                    <i class="ph ph-shield-check" style="color: var(--accent-emerald); font-size: 1.5rem; flex-shrink: 0; margin-top: 2px;"></i>
+                    <div>
+                        <h4 style="color: #6ee7b7; font-size: 0.95rem; margin-bottom: 0.35rem;">Campus Safety & Respect Pledge</h4>
+                        <p style="color: #94a3b8; font-size: 0.85rem; line-height: 1.45;">
+                            All mentors and learners agree to maintain a safe, respectful, and harassment-free learning environment. Respectful conduct ratings are recorded after every session to uphold the highest campus safety standard.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+                <i class="ph ph-check-circle"></i>
+                <span>Complete Registration & Launch Profile</span>
+            </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 1.5rem; color: var(--text-secondary); font-size: 0.9rem;">
+            Already have an account? <a href="{{ url_for('login') }}">Log In here</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

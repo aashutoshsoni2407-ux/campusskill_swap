@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}CampusSkillSwap | Peer-to-Peer Student Mentorship & Skill Exchange{% endblock %}
+
+{% block content %}
+<!-- Collegiate Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-pill">
+            <i class="ph ph-shield-check" style="color: var(--accent-emerald);"></i>
+            <span>Verified Student Tutors & Peer Safety Index</span>
+        </div>
+        <h1 class="hero-title">
+            Swap Skills, Ace Academics &<br>
+            <span>Level Up Together</span>
+        </h1>
+        <p class="hero-subtitle">
+            Teach what you master, learn what you need. Connect with top college peer tutors, schedule 1-on-1 mentorship, exchange study notes, and learn in a respectful campus community.
+        </p>
+
+        <!-- 2nd Interface Search Bar on Hero -->
+        <form action="{{ url_for('search') }}" method="GET" class="hero-search-box">
+            <input 
+                type="text" 
+                name="q" 
+                class="hero-search-input" 
+                placeholder="What skill do you want to learn today? (e.g. Python, Calculus, ML, React...)" 
+                required
+            >
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i class="ph ph-magnifying-glass"></i>
+                <span>Find Matching Tutors</span>
+            </button>
+        </form>
+
+        <div style="margin-top: 1.5rem; display: flex; justify-content: center; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+            <span style="font-size: 0.85rem; color: var(--text-muted);">Trending skills:</span>
+            <a href="{{ url_for('search', q='Python') }}" class="tag tag-teach">Python</a>
+            <a href="{{ url_for('search', q='Machine Learning') }}" class="tag tag-teach">Machine Learning</a>
+            <a href="{{ url_for('search', q='Calculus') }}" class="tag tag-teach">Calculus</a>
+            <a href="{{ url_for('search', q='React') }}" class="tag tag-teach">React & UI/UX</a>
+            <a href="{{ url_for('search', q='Cyber Security') }}" class="tag tag-teach">Cyber Security</a>
+        </div>
+    </div>
+</section>
+
+<!-- Live Platform Stats -->
+<section class="stats-strip">
+    <div class="stats-grid">
+        <div class="stat-item">
+            <div class="stat-num">{{ stats.students }}+</div>
+            <div class="stat-label">Active Campus Students</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-num">{{ stats.tutors }}+</div>
+            <div class="stat-label">Verified Peer Mentors</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-num">{{ stats.sessions }}</div>
+            <div class="stat-label">1-on-1 Sessions Completed</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-num">{{ stats.resources }}+</div>
+            <div class="stat-label">Shared Notes & Cheat Sheets</div>
+        </div>
+    </div>
+</section>
+
+<!-- Core Features Section -->
+<section class="container">
+    <div class="section-header">
+        <div>
+            <h2 class="section-title">Designed for College Excellence & Safety</h2>
+            <p class="section-subtitle">Everything you need for seamless student-to-student knowledge exchange</p>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-bottom: 3.5rem;">
+        <div class="card">
+            <div style="width: 48px; height: 48px; background: rgba(99, 102, 241, 0.15); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 1.6rem; margin-bottom: 1.25rem;">
+                <i class="ph ph-arrows-clockwise"></i>
+            </div>
+            <h3 style="color: #ffffff; font-size: 1.15rem; margin-bottom: 0.5rem;">Mutual Skill Swap</h3>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                List "Skills I can teach" alongside "Skills I want to learn" to discover reciprocal learning partners across departments.
+            </p>
+        </div>
+
+        <div class="card">
+            <div style="width: 48px; height: 48px; background: rgba(16, 185, 129, 0.15); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--accent-emerald); font-size: 1.6rem; margin-bottom: 1.25rem;">
+                <i class="ph ph-shield-star"></i>
+            </div>
+            <h3 style="color: #ffffff; font-size: 1.15rem; margin-bottom: 0.5rem;">Respect & Conduct Index</h3>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                Tutors are evaluated on teaching quality and respectful peer conduct, ensuring a safe, supportive environment for all students.
+            </p>
+        </div>
+
+        <div class="card">
+            <div style="width: 48px; height: 48px; background: rgba(6, 182, 212, 0.15); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--accent-cyan); font-size: 1.6rem; margin-bottom: 1.25rem;">
+                <i class="ph ph-calendar-plus"></i>
+            </div>
+            <h3 style="color: #ffffff; font-size: 1.15rem; margin-bottom: 0.5rem;">Smart Scheduler</h3>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                Book 1-on-1 tutoring with Google Meet links or campus study room coordinates in a single click.
+            </p>
+        </div>
+
+        <div class="card">
+            <div style="width: 48px; height: 48px; background: rgba(245, 158, 11, 0.15); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: var(--accent-amber); font-size: 1.6rem; margin-bottom: 1.25rem;">
+                <i class="ph ph-folder-notch-open"></i>
+            </div>
+            <h3 style="color: #ffffff; font-size: 1.15rem; margin-bottom: 0.5rem;">Digital Notes Locker</h3>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                Exchange hand-crafted lecture notes, cheat sheets, exam summaries, and open-source code repositories.
+            </p>
+        </div>
+    </div>
+
+    <!-- Featured Top Tutors -->
+    <div class="section-header">
+        <div>
+            <h2 class="section-title">Top Rated Peer Mentors</h2>
+            <p class="section-subtitle">Verified high academic standing and top peer conduct ratings</p>
+        </div>
+        <a href="{{ url_for('search') }}" class="btn btn-outline btn-sm">
+            <span>Explore All Tutors</span>
+            <i class="ph ph-arrow-right"></i>
+        </a>
+    </div>
+
+    <div class="tutor-grid">
+        {% for tutor in featured_tutors %}
+        <div class="tutor-card">
+            <div class="academic-badge">
+                <i class="ph ph-certificate"></i>
+                <span>{{ tutor.academic_performance }}</span>
+            </div>
+            <div class="tutor-card-header">
+                <img src="{{ tutor.profile_pic }}" alt="{{ tutor.name }}" class="tutor-avatar">
+                <div class="tutor-info">
+                    <h3>{{ tutor.name }}</h3>
+                    <div class="tutor-meta">{{ tutor.department }} • {{ tutor.year }}</div>
+                    <div class="ratings-strip">
+                        <span class="rating-badge rating-tutor" title="Teaching Quality Rating">
+                            <i class="ph-fill ph-star"></i> {{ tutor.tutor_rating }} ({{ tutor.tutor_reviews_count }})
+                        </span>
+                        <span class="rating-badge rating-conduct" title="Respectful Peer Conduct & Safety Index">
+                            <i class="ph-fill ph-shield-check"></i> {{ tutor.conduct_rating }} Safe Conduct
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tutor-card-body">
+                <div class="skill-section">
+                    <div class="skill-label">Skills I Can Teach:</div>
+                    <div class="tags-list">
+                        {% for skill in tutor.skills_teach.split(',')[:3] %}
+                            <span class="tag tag-teach">{{ skill.strip() }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="skill-section">
+                    <div class="skill-label">Skills I Want To Learn:</div>
+                    <div class="tags-list">
+                        {% for skill in tutor.skills_learn.split(',')[:2] %}
+                            <span class="tag tag-learn">{{ skill.strip() }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <p class="tutor-experience">
+                    <i class="ph ph-briefcase" style="color: var(--primary);"></i>
+                    {{ tutor.experience[:90] }}...
+                </p>
+            </div>
+
+            <div class="tutor-card-footer">
+                <a href="{{ url_for('profile', user_id=tutor.id) }}" class="btn btn-secondary btn-sm">
+                    <i class="ph ph-user"></i> View Profile
+                </a>
+                <a href="{{ url_for('profile', user_id=tutor.id) }}#schedule" class="btn btn-primary btn-sm">
+                    <i class="ph ph-calendar-plus"></i> Book Session
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
